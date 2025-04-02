@@ -1,0 +1,7 @@
+aiogram[fastapi]
+openai
+langchain
+faiss-cpu
+tiktoken
+python-dotenv
+aiosqlite
