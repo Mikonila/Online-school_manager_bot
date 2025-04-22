@@ -27,14 +27,14 @@ async def init_db():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
-async def log_interaction(user_id, age, experience, question, answer):
-    async with async_session() as session:
-        msg = Message(
-            user_id=user_id,
-            age=age,
-            experience=experience,
-            question=question,
-            answer=answer
-        )
-        session.add(msg)
-        await session.commit()
+# async def log_interaction(user_id, age, experience, question, answer):
+#     async with async_session() as session:
+#         msg = Message(
+#             user_id=user_id,
+#             age=age,
+#             experience=experience,
+#             question=question,
+#             answer=answer
+#         )
+#         session.add(msg)
+#         await session.commit()

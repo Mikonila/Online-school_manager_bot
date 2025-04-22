@@ -7,7 +7,7 @@ from aiogram.filters import StateFilter
 import logging
 
 from bot.services.gpt_engine import ask_gpt
-from bot.database.models import log_interaction
+# from bot.database.models import log_interaction
 from bot.services.search_engine import search_knowledge
 
 # Подключаем агентов
@@ -168,20 +168,24 @@ async def process_question(message: Message, state: FSMContext):
         await state.update_data(age=age, experience=experience, role=role)
 
         # Добавляем ссылку на демо, если в ответе найден курс
-        for course_url, demo_url in course_links_dict.items():
-            if course_url in answer and demo_url not in answer:
-                answer += f"\n\n🔗 Ссылка на демо-урок: {demo_url}"
+        # Добавим в конце ответа ссылку на демо, если курс найден в словаре и ссылка ещё не вставлена
+        for url_key, demo_link in course_links_dict.items():
+            course_name = url_key.split("/")[-1].lower()
+
+            if course_name in answer.lower() and demo_link not in answer:
+                answer += f"\n\n🔗 Ссылка на демо-урок: {demo_link}"
+                break  # останавливаемся после первого совпадения
 
         history += f"\nБот: {answer}"
         await state.update_data(history=history)
 
-        await log_interaction(
-            user_id=message.from_user.id,
-            age=age,
-            experience=experience,
-            question=message.text,
-            answer=answer
-        )
+        # await log_interaction(
+        #     user_id=message.from_user.id,
+        #     age=age,
+        #     experience=experience,
+        #     question=message.text,
+        #     answer=answer
+        # )
 
         await message.answer(answer)
 
