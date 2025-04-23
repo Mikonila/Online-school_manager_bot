@@ -7,13 +7,11 @@ from aiogram.filters import StateFilter
 import logging
 
 from bot.services.gpt_engine import ask_gpt
-# from bot.database.models import log_interaction
 from bot.services.search_engine import search_knowledge
 
 # Подключаем агентов
 from bot.handlers.agents import generator, goal_setter, presenter, objections
 
-from bot.services.sheets import write_to_google_sheets
 from bot.services.sheets import update_user_row
 
 
