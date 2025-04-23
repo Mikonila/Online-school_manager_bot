@@ -5,3 +5,4 @@ faiss-cpu
 tiktoken
 python-dotenv
 aiosqlite
+gspread google-auth

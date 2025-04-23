@@ -13,6 +13,10 @@ from bot.services.search_engine import search_knowledge
 # Подключаем агентов
 from bot.handlers.agents import generator, goal_setter, presenter, objections
 
+from bot.services.sheets import write_to_google_sheets
+from bot.services.sheets import update_user_row
+
+
 router = Router()
 router.include_router(generator.router)
 router.include_router(goal_setter.router)
@@ -179,13 +183,6 @@ async def process_question(message: Message, state: FSMContext):
         history += f"\nБот: {answer}"
         await state.update_data(history=history)
 
-        # await log_interaction(
-        #     user_id=message.from_user.id,
-        #     age=age,
-        #     experience=experience,
-        #     question=message.text,
-        #     answer=answer
-        # )
 
         await message.answer(answer)
 
@@ -202,9 +199,17 @@ async def process_question(message: Message, state: FSMContext):
         )
 
         await message.bot.send_message(MANAGER_CHAT_ID, log_text, parse_mode="Markdown")
+        user_data = {
+            "ID": str(message.from_user.id),
+            "Имя": message.from_user.full_name,
+            "Username": f"@{message.from_user.username or '—'}",
+            "Возраст": age,
+            "Опыт": experience,
+            "Интересы": role,
+            "История": f"Пользователь: {message.text}\nБот: {answer}"
+        }
+        update_user_row(user_data)
+
 
     except Exception as e:
         logger.exception("Ошибка при обработке пользовательского запроса в waiting_for_question")
-        await message.answer(
-            "Что-то пошло не так при подборе курса 😔\nПопробуйте снова или выберите другой вариант."
-        )
