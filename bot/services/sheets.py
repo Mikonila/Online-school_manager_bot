@@ -4,7 +4,7 @@ from google.oauth2.service_account import Credentials
 # Подключение к Google Sheets
 def connect_to_sheet():
     scopes = ["https://www.googleapis.com/auth/spreadsheets"]
-    creds = Credentials.from_service_account_file("credentials.json", scopes=scopes)
+    creds = Credentials.from_service_account_file("bot/services/credentials.json", scopes=scopes)
     client = gspread.authorize(creds)
     spreadsheet = client.open("Codim_logs")  # замени на своё название
     return spreadsheet.sheet1  # используем первый лист
