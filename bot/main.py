@@ -6,7 +6,7 @@ import os
 import logging
 from bot.config import load_config
 from bot.handlers import dialog
-from bot.database.models import init_db
+
 
 
 from aiogram.client.default import DefaultBotProperties
@@ -26,7 +26,6 @@ async def main():
 
     dp.include_router(dialog.router)
 
-    await init_db()
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
