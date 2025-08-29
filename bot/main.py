@@ -6,9 +6,6 @@ import os
 import logging
 from bot.config import load_config
 from bot.handlers import dialog
-
-
-
 from aiogram.client.default import DefaultBotProperties
 
 load_dotenv()
