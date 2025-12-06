@@ -178,6 +178,8 @@ COURSE_NAME_MAPPING = {
     "minecraft": "minecraft",
     "майнкрафт джуниор": "minecraftjr",
     "minecraft junior": "minecraftjr",
+    "логические задачи майнкрафт": "minecraftjr",
+    "логические задачи в minecraft": "minecraftjr",
     "роблокс": "roblox",
     "roblox": "roblox",
     "колобот": "colobot",
@@ -265,11 +267,11 @@ def get_course_demo_link(course_name: str) -> str:
     return None
 
 # Функция для получения полной информации о курсе
-def get_course_info(course_name: str) -> dict:
+# def get_course_info(course_name: str) -> dict:
     """
     Возвращает полную информацию о курсе по названию
     """
-    return find_course_by_name(course_name)
+    # return find_course_by_name(course_name)
 
 # Словарь с тарифами
 TARIFFS = {

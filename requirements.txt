@@ -1,6 +1,6 @@
 aiogram[fastapi]
 openai>=1.0.0
-langchain
+langchain==0.0.354
 faiss-cpu
 tiktoken
 python-dotenv

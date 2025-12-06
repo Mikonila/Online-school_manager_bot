@@ -2,43 +2,73 @@ import gspread
 from google.oauth2.service_account import Credentials
 import logging
 import re
+import os
 from typing import Dict, List, Optional
+from bot.config import load_config
+
 logger = logging.getLogger(__name__)
 
-# IDs ваших таблиц
-COURSES_SHEET_ID = "1XN9SxS2PkYK7NVE2ma66eeitQlv6VEwtCaO92ji8Sow"
-TARIFFS_SHEET_ID = "1AunTrKemY3Zrtvc0AzkRnLrjsEm86I8UqcVJBBY6kq4"
+# Загружаем конфигурацию
+config = load_config()
 
 # Подключение к Google Sheets
 def connect_to_sheet():
-    scopes = [
-        "https://www.googleapis.com/auth/spreadsheets",
-        "https://www.googleapis.com/auth/drive"
-    ]
-    creds = Credentials.from_service_account_file("bot/services/credentials.json", scopes=scopes)
-    client = gspread.authorize(creds)
-    spreadsheet = client.open_by_key("1RHWlD3afHMUh7QWORNZJ_g2e03vMHtF0rSuYRNl4uJU")
-    return spreadsheet.sheet1  # используем первый лист
+    try:
+        scopes = [
+            "https://www.googleapis.com/auth/spreadsheets",
+            "https://www.googleapis.com/auth/drive"
+        ]
+        
+        # Проверяем наличие файла credentials
+        if not os.path.exists(config.CREDENTIALS_PATH):
+            logger.error(f"❌ Файл credentials.json не найден по пути: {config.CREDENTIALS_PATH}")
+            raise FileNotFoundError(f"Файл учетных данных не найден: {config.CREDENTIALS_PATH}")
+        
+        creds = Credentials.from_service_account_file(config.CREDENTIALS_PATH, scopes=scopes)
+        client = gspread.authorize(creds)
+        spreadsheet = client.open_by_key(config.MAIN_SHEET_ID)
+        return spreadsheet.sheet1  # используем первый лист
+    except Exception as e:
+        logger.error(f"❌ Ошибка подключения к Google Sheets: {e}")
+        raise
 
 def connect_to_courses_sheet():
-    scopes = [
-        "https://www.googleapis.com/auth/spreadsheets",
-        "https://www.googleapis.com/auth/drive"
-    ]
-    creds = Credentials.from_service_account_file("bot/services/credentials.json", scopes=scopes)
-    client = gspread.authorize(creds)
-    spreadsheet = client.open_by_key(COURSES_SHEET_ID)
-    return spreadsheet.sheet1  # используем первый лист
+    try:
+        scopes = [
+            "https://www.googleapis.com/auth/spreadsheets",
+            "https://www.googleapis.com/auth/drive"
+        ]
+        
+        if not os.path.exists(config.CREDENTIALS_PATH):
+            logger.error(f"❌ Файл credentials.json не найден по пути: {config.CREDENTIALS_PATH}")
+            raise FileNotFoundError(f"Файл учетных данных не найден: {config.CREDENTIALS_PATH}")
+        
+        creds = Credentials.from_service_account_file(config.CREDENTIALS_PATH, scopes=scopes)
+        client = gspread.authorize(creds)
+        spreadsheet = client.open_by_key(config.COURSES_SHEET_ID)
+        return spreadsheet.sheet1  # используем первый лист
+    except Exception as e:
+        logger.error(f"❌ Ошибка подключения к таблице курсов: {e}")
+        raise
 
 def connect_to_tariffs_sheet():
-    scopes = [
-        "https://www.googleapis.com/auth/spreadsheets",
-        "https://www.googleapis.com/auth/drive"
-    ]
-    creds = Credentials.from_service_account_file("bot/services/credentials.json", scopes=scopes)
-    client = gspread.authorize(creds)
-    spreadsheet = client.open_by_key(TARIFFS_SHEET_ID)
-    return spreadsheet.sheet1
+    try:
+        scopes = [
+            "https://www.googleapis.com/auth/spreadsheets",
+            "https://www.googleapis.com/auth/drive"
+        ]
+        
+        if not os.path.exists(config.CREDENTIALS_PATH):
+            logger.error(f"❌ Файл credentials.json не найден по пути: {config.CREDENTIALS_PATH}")
+            raise FileNotFoundError(f"Файл учетных данных не найден: {config.CREDENTIALS_PATH}")
+        
+        creds = Credentials.from_service_account_file(config.CREDENTIALS_PATH, scopes=scopes)
+        client = gspread.authorize(creds)
+        spreadsheet = client.open_by_key(config.TARIFFS_SHEET_ID)
+        return spreadsheet.sheet1  # используем первый лист
+    except Exception as e:
+        logger.error(f"❌ Ошибка подключения к таблице тарифов: {e}")
+        raise
 
 def update_user_row(user_data: dict):
     print("=== update_user_row called ===", user_data)
@@ -136,30 +166,30 @@ def update_user_row(user_data: dict):
         import traceback
         logger.error(f"🔍 Полный traceback: {traceback.format_exc()}")
 
-def get_course_info(course_name: str) -> Optional[Dict]:
-    try:
-        sheet = connect_to_courses_sheet()
-        records = sheet.get_all_records()
-        headers = sheet.row_values(1)
-        course_name_lower = course_name.lower().strip()
-        for record in records:
-            sheet_course_name = str(record.get("Курс", "")).lower().strip()
-            if course_name_lower in sheet_course_name or sheet_course_name in course_name_lower:
-                return {
-                    "name": record.get("Курс", ""),
-                    "subscription_price": record.get("Подписка на 30 дней", ""),
-                    "pro_price": record.get("ПРО", ""),
-                    "pro_access": record.get("доступ к урокам в пакете ПРО", ""),
-                    "online_price_1": record.get("Онлайн индивидуально 1 урок", ""),
-                    "online_price_8": record.get("Онлайн индивидуально 8 уроков", ""),
-                    "lessons": record.get("количество основных уроков, не считая демо уроков", ""),
-                    "note": record.get("Примечание", ""),
-                    "demo_link": record.get("Демо-ссылка", "")
-                }
-        return None
-    except Exception as e:
-        logger.exception(f"Ошибка при получении информации о курсе '{course_name}': {e}")
-        return None
+# def get_course_info(course_name: str) -> Optional[Dict]:
+#     try:
+#         sheet = connect_to_courses_sheet()
+#         records = sheet.get_all_records()
+#         headers = sheet.row_values(1)
+#         course_name_lower = course_name.lower().strip()
+#         for record in records:
+#             sheet_course_name = str(record.get("Курс", "")).lower().strip()
+#             if course_name_lower in sheet_course_name or sheet_course_name in course_name_lower:
+#                 return {
+#                     "name": record.get("Курс", ""),
+#                     "subscription_price": record.get("Подписка на 30 дней", ""),
+#                     "pro_price": record.get("ПРО", ""),
+#                     "pro_access": record.get("доступ к урокам в пакете ПРО", ""),
+#                     "online_price_1": record.get("Онлайн индивидуально 1 урок", ""),
+#                     "online_price_8": record.get("Онлайн индивидуально 8 уроков", ""),
+#                     "lessons": record.get("количество основных уроков, не считая демо уроков", ""),
+#                     "note": record.get("Примечание", ""),
+#                     "demo_link": record.get("Демо-ссылка", "")
+#                 }
+#         return None
+#     except Exception as e:
+#         logger.exception(f"Ошибка при получении информации о курсе '{course_name}': {e}")
+#         return None
 
 def get_all_courses() -> List[Dict]:
     try:
@@ -174,16 +204,16 @@ def get_all_courses() -> List[Dict]:
         logger.exception(f"Ошибка при получении всех курсов: {e}")
         return []
 
-def get_course_prices(course_name: str) -> Dict:
-    """Получить цены для конкретного курса"""
-    course_info = get_course_info(course_name)
-    if course_info:
-        return {
-            "subscription": course_info.get("subscription_price", ""),
-            "pro": course_info.get("pro_price", ""),
-            "online": course_info.get("online_price_1", "")
-        }
-    return {}
+# def get_course_prices(course_name: str) -> Dict:
+#     """Получить цены для конкретного курса"""
+#     course_info = get_course_info(course_name)
+#     if course_info:
+#         return {
+#             "subscription": course_info.get("subscription_price", ""),
+#             "pro": course_info.get("pro_price", ""),
+#             "online": course_info.get("online_price_1", "")
+#         }
+#     return {}
 
 def is_scratch_course(course_name: str) -> bool:
     course_name_lower = course_name.lower()

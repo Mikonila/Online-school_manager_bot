@@ -1,3 +1,38 @@
+# Python
 _pycache__/
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Конфиденциальные файлы
+.env
+*.json
+!package.json
+!package-lock.json
+!tsconfig.json
+!composer.json
+!composer.lock
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Логи
+*.log
+logs/
+
+# Временные файлы
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
