@@ -128,4 +128,4 @@
 
 <img width="646" height="958" alt="изображение" src="https://github.com/user-attachments/assets/74113b9d-2491-49c1-8852-54442487f29b" />
 
-<img width="646" height="958" alt="изображение" src="https://github.com/user-attachments/assets/e6922883-f358-432e-9770-c1f5010787c6" />
+<img width="646" height="958" alt="изображение" src="https://github.com/user-attachments/assets/1509866c-eb05-485c-983f-ae89d9b22600" />
